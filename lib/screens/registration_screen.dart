@@ -1,10 +1,12 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flash_chat_starting_project/components/rounded_button.dart';
 
 import '/constants.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  static const String id='registration_screen';
+  static const String id = 'registration_screen';
+
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
@@ -27,26 +29,45 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             const SizedBox(
               height: 48.0,
             ),
-            TextField(
-              decoration: kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
+            TextFormField(
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: 'Enter your email',
+                labelText: 'Email',
+              ),
               onChanged: (value) {
                 //Do something with the user input
-
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (email){
+                return email!=null && EmailValidator.validate(email)?null:'Please enter a valid email';
               },
             ),
             const SizedBox(
               height: 16,
             ),
-            TextField(
-              decoration: kTextFieldDecoration.copyWith(hintText: 'Enter your password'),
+            TextFormField(
+              decoration: kTextFieldDecoration.copyWith(
+                hintText: 'Enter your password',
+                labelText: 'Password',
+              ),
+              obscureText: true,
               onChanged: (value) {
                 //Do something with the user input
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (password) {
+                return password != null && password.length > 5
+                    ? null
+                    : 'The password should be of 6 characters at least. ';
               },
             ),
             const SizedBox(
               height: 24.0,
             ),
-           RoundedButton(color: kRegisterButtonColor, title: 'Register', onPressed: (){}),
+            RoundedButton(
+                color: kRegisterButtonColor,
+                title: 'Register',
+                onPressed: () {}),
             const SizedBox(height: 12),
             IconButton(
               icon: const Icon(Icons.arrow_back),
