@@ -5,7 +5,7 @@ import '/constants.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
-  static const String id='login_screen';
+  static const String id = 'login_screen';
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -37,8 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 //Do something with the user input
               },
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (email){
-                return email!=null && EmailValidator.validate(email)?null:'Please enter a valid email';
+              validator: (email) {
+                return email != null && EmailValidator.validate(email)
+                    ? null
+                    : 'Please enter a valid email';
               },
             ),
             const SizedBox(
@@ -63,7 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(
               height: 24.0,
             ),
-            RoundedButton(color:kLoginButtonColor, title: 'Log In', onPressed:(){}),
+            RoundedButton(
+                color: kLoginButtonColor, title: 'Log In', onPressed: () {}),
             const SizedBox(height: 12),
             IconButton(
               icon: const Icon(Icons.arrow_back),
