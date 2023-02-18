@@ -14,12 +14,21 @@ class _ChatScreenState extends State<ChatScreen> {
   final _fireStore=FirebaseFirestore.instance;
   TextEditingController _messageTextController=TextEditingController();
 
-  //void getMessages()async{
-  //var messages = await _firebase.collection('messages').get();
-  //for(var message in messages.docs){
-  //print(message.date());
-  //}
+  // void getMessages()async{
+  // var messages = await _fireStore.collection('messages').get();
+  // for(var message in messages.docs){
+  // print(message.data());
   // }
+  // }
+  void messageStream(){
+    //stream
+    _fireStore.collection('messages').snapshots().listen((event) {
+      for(var message in event.docs){
+        print(message.data());
+      }
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,9 +40,10 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                Navigator.pop(context);
-                AuthService().signOut();
-                //getMessages();
+                // Navigator.pop(context);
+                // AuthService().signOut();
+                // getMessages();
+                messageStream();
 
               }),
         ],
@@ -57,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      _fireStore.collection('message').add({
+                      _fireStore.collection('messages').add({
                         'date':DateTime.now().millisecondsSinceEpoch,
                         'text':_messageTextController.text,
                         'sender':AuthService().getCurrentUser!.email,
