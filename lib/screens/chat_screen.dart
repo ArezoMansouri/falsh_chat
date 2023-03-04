@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_chat_starting_project/components/message-bubble.dart';
 import 'package:flash_chat_starting_project/services/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -16,21 +15,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final _fireStore = FirebaseFirestore.instance;
   TextEditingController _messageTextController = TextEditingController();
 
-  // void getMessages()async{
-  // var messages = await _fireStore.collection('messages').get();
-  // for(var message in messages.docs){
-  // print(message.data());
-  // }
-  // }
-  void messageStream() {
-    //stream
-    _fireStore.collection('messages').snapshots().listen((event) {
-      for (var message in event.docs) {
-        print(message.data());
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +26,9 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                Navigator.pop(context);
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
                 AuthService().signOut();
               }),
         ],
@@ -91,14 +77,15 @@ class MessageStream extends StatelessWidget {
   const MessageStream({
     Key? key,
     required FirebaseFirestore fireStore,
-  }) : _fireStore = fireStore, super(key: key);
+  })  : _fireStore = fireStore,
+        super(key: key);
 
   final FirebaseFirestore _fireStore;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _fireStore.collection('messages').snapshots(),
+      stream: _fireStore.collection('messages').orderBy('date',descending: true).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Expanded(
@@ -115,12 +102,17 @@ class MessageStream extends StatelessWidget {
           for (var message in messages) {
             var messageText = message.get('text');
             var sender = message.get('sender');
-            Widget messageBubble = MessageBubble(message: messageText,sender: sender,);
+            Widget messageBubble = MessageBubble(
+              message: messageText,
+              sender: sender,
+              isMe:AuthService().getCurrentUser!.email==sender,
+            );
             messageBubbles.add(messageBubble);
           }
           return Expanded(
             child: ListView(
-                children: messageBubbles,
+              reverse: true,
+              children: messageBubbles,
             ),
           );
         } else {
@@ -132,4 +124,3 @@ class MessageStream extends StatelessWidget {
     );
   }
 }
-
